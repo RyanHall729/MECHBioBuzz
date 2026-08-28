@@ -88,8 +88,8 @@ public class Drivetrain {
 //        setLifterUp();
 
         // Odometry configuration
-        odo.setOffsets(171.45, -117.5, DistanceUnit.MM);
-        odo.setEncoderResolution(GoBildaPinpointDriver.GoBildaOdometryPods.goBILDA_SWINGARM_POD);
+        odo.setOffsets(35, 35, DistanceUnit.MM);
+        odo.setEncoderResolution(GoBildaPinpointDriver.GoBildaOdometryPods.goBILDA_4_BAR_POD);
         odo.setEncoderDirections(GoBildaPinpointDriver.EncoderDirection.REVERSED, GoBildaPinpointDriver.EncoderDirection.FORWARD);
         // Important: Robot must be sationaty at this point to calibrate the IMU.
 //        odo.recalibrateIMU();
