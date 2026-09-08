@@ -36,9 +36,16 @@ public class RobotHardware {
     public static final String BACK_RIGHT_DRIVE_NAME = "back_right_drive";
     public static final String ODO_NAME = "odo";
 
-    public static final String INTAKE_ROLLER_NAME = "intake_roller";
+    public static final String INTAKE_ROLLER_NAME = "intake_roller_1";
+    public static final String INTAKE_ROLLER_2_NAME = "intake_roller_2";
 
-//    // Intake & Ball Transport
+
+    public static final String INTAKE_CAMERA_NAME = "huskylens";
+
+    public static final String LIFT_MOTOR_1_NAME = "lift_motor_1";
+    public static final String LIFT_MOTOR_2_NAME = "lift_motor_2";
+    public static final String LIFT_LIMIT_SWITCH_NAME = "lift_limit_switch";
+    //    // Intake & Ball Transport
 //    public static final String INTAKE_ROLLER_NAME = "intake_roller";
 //    public static final String ROLLER_BED_MOTOR_NAME = "turret_encoder"; // we use the same port for the turret encoder and the roller bed motor
 ////    public static final String LEFT_ROLLER_BED_SERVO_NAME = "left_roller_bed_servo";
@@ -84,6 +91,13 @@ public class RobotHardware {
     public DcMotor backRightDrive;
     public GoBildaPinpointDriver odo;
 
+    public HuskyLens huskyLens;
+
+
+    public DcMotorEx liftMotor1;
+    public DcMotorEx liftMotor2;
+    public DigitalChannel liftLimitSwitch;
+
     // Intake & Ball Transport
 //    public DcMotor intakeRoller;
 //    public DcMotor rollerBedMotor;
@@ -97,7 +111,9 @@ public class RobotHardware {
 //    public CRServo leftBoosterServo;
 //    public CRServo rightBoosterServo;
 //    public HuskyLens huskyLens;
-    public DcMotor intakeRoller;
+    public DcMotorEx intakeRoller1;
+
+    public DcMotorEx intakeRoller2;
 
     // Color Sensors
 //    public NormalizedColorSensor leftCS;
@@ -134,7 +150,11 @@ public class RobotHardware {
         frontRightDrive = hardwareMap.get(DcMotor.class, FRONT_RIGHT_DRIVE_NAME);
         backRightDrive = hardwareMap.get(DcMotor.class, BACK_RIGHT_DRIVE_NAME);
         odo = hardwareMap.get(GoBildaPinpointDriver.class, ODO_NAME);
-        //intakeRoller = hardwareMap.get(DcMotor.class, INTAKE_ROLLER_NAME);
+        intakeRoller1 = hardwareMap.get(DcMotorEx.class, INTAKE_ROLLER_NAME);
+        intakeRoller2 = hardwareMap.get(DcMotorEx.class, INTAKE_ROLLER_2_NAME);
+        liftMotor1 = hardwareMap.get(DcMotorEx.class, LIFT_MOTOR_1_NAME);
+        liftMotor2 = hardwareMap.get(DcMotorEx.class, LIFT_MOTOR_2_NAME);
+        liftLimitSwitch = hardwareMap.get(DigitalChannel.class, LIFT_LIMIT_SWITCH_NAME);
 
         // Intake & Ball Transport
 //        intakeRoller = hardwareMap.get(DcMotor.class, INTAKE_ROLLER_NAME);
@@ -148,7 +168,7 @@ public class RobotHardware {
 //        rightFeederServo = hardwareMap.get(CRServo.class, RIGHT_FEEDER_SERVO_NAME);
 //        leftBoosterServo = hardwareMap.get(CRServo.class, LEFT_BOOSTER_SERVO_NAME);
 //        rightBoosterServo = hardwareMap.get(CRServo.class, RIGHT_BOOSTER_SERVO_NAME);
-//        huskyLens = hardwareMap.get(HuskyLens.class, INTAKE_CAMERA_NAME);
+        huskyLens = hardwareMap.get(HuskyLens.class, INTAKE_CAMERA_NAME);
 
         // Color Sensors
 //        leftCS = hardwareMap.get(NormalizedColorSensor.class, LEFT_COLOR_SENSOR_NAME);

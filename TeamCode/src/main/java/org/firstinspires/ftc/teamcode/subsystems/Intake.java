@@ -2,6 +2,8 @@ package org.firstinspires.ftc.teamcode.subsystems;
 
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
@@ -9,6 +11,11 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 
 import org.firstinspires.ftc.teamcode.hardware.RobotHardware;
 import org.firstinspires.ftc.teamcode.util.BallColor;
+import org.firstinspires.ftc.teamcode.util.HuskyLensUtil;
+import org.firstinspires.ftc.teamcode.util.IntakeRoller;
+
+import java.util.Locale;
+
 
 /**
  * The Intake subsystem is responsible for collecting balls from the field,
@@ -18,6 +25,7 @@ import org.firstinspires.ftc.teamcode.util.BallColor;
 public class Intake {
 
     // --- Constants ---
+    private final IntakeRoller rollerController;
     private static final double INTAKE_ROLLER_SPEED = 1.0;
 
     private static final double INTAKE_ROLLER_SPEED_FORWARD = 1.0;
@@ -34,6 +42,8 @@ public class Intake {
     private static final long ROLLER_BED_SHAKE_REVERSE_MS = 400;
     private static final double ROLLER_BED_SHAKE_SPEED = 0.7;
 
+    private boolean isCameraSensingEnabled = false;
+
     private static final double LEFT_GATE_OPEN_POS = 1;
     private static final double LEFT_GATE_CLOSE_POS = 0.279;
     private static final double MID_GATE_OPEN_POS = 0;
@@ -48,14 +58,17 @@ public class Intake {
     }
 
     // --- Hardware ---
-    private final DcMotor intakeRoller;
-
+    private final HuskyLensUtil intakeCamera;
     // --- State ---
 
 
     private IntakeState currentIntakeState = IntakeState.OFF;
 
+
+
     private IntakeState previousIntakeState = IntakeState.OFF;
+
+    private double forwardRPM = 2200.0;
 
 
     // --- Flag to control color sensor updates ---private boolean isColorSensingEnabled = false;
@@ -64,22 +77,31 @@ public class Intake {
 
     // --- State variables to track last set power ---
     private double lastIntakeRollerPower = -999;
-    // State variables for individual gate toggles
 
     public Intake(RobotHardware robot) {
-        // Assign hardware from the hub
-        this.intakeRoller = robot.intakeRoller;
+//        this.intakeRoller = robot.intakeRoller;
+//        this.intakeRoller2 = robot.intakeRoller2;
 
+        // NEW: Cast motors to DcMotorEx to support velocity-based PIDF control
+        DcMotorEx motor1 = robot.intakeRoller1;
+        DcMotorEx motor2 = robot.intakeRoller2;
 
-        // Instantiate helper objects
+        this.intakeCamera = new HuskyLensUtil(robot);
 
-        // --- INITIAL CONFIGURATION ---
-        this.intakeRoller.setDirection(DcMotor.Direction.REVERSE);
+        // NEW: Initialize the PIDF controller utility
+        this.rollerController = new IntakeRoller(motor1, motor2);
 
-        // Set initial positions and powers
+        // NEW: Set PIDF coefficients (kP, kI, kD, kF)
+        // 0.5 kF provides ~50% baseline power for the 6000 RPM motors
+//        this.rollerController.setPIDFCoefficients(0.01, 0.0, 0.0, 0.5);
+
+        /* --- OLD CODE (PRE-PIDF) ---
+        this.intakeRoller.setDirection(DcMotor.Direction.FORWARD);
+        this.intakeRoller2.setDirection(DcMotor.Direction.FORWARD);
         this.intakeRoller.setPower(0);
-
-        }
+        this.intakeRoller2.setPower(0);
+        */
+    }
 
     // --- High-Level Control Methods ---
 
@@ -99,57 +121,116 @@ public class Intake {
 
 
     /**
-     * This method should be called in every loop of the OpMode.
-     * It handles state updates like timed gate closing and setting motor powers.
+     * This method handles state updates for the intake roller.
+     * Uses the PIDF controller for forward motion and manual power for reverse.
      */
     public void update() {
-        // --- Only update camera if enabled ---
-
-        // --- Only set power if it has changed ---
-
-        // 1. Intake Roller
-
-
         if (currentIntakeState != previousIntakeState) {
             switch (currentIntakeState) {
                 case FORWARD:
+                    // NEW: Use PIDF to maintain the configured forward RPM
+                    rollerController.setRPM(forwardRPM);
+//                    rollerController.setPower(1.0);
+                    /* --- OLD CODE ---
+
                     intakeRoller.setPower(INTAKE_ROLLER_SPEED_FORWARD);
+                    intakeRoller2.setPower(INTAKE_ROLLER_SPEED_FORWARD);
+                    */
                     break;
                 case REVERSE:
+                    // NEW: Use manual override for 100% outtake power
+                    rollerController.setPower(-1.0);
+                    /* --- OLD CODE ---
                     intakeRoller.setPower(INTAKE_ROLLER_SPEED_BACKWARD);
+                    intakeRoller2.setPower(INTAKE_ROLLER_SPEED_BACKWARD);
+                    */
                     break;
                 case OFF:
+                    // NEW: Use controller to stop and reset PID internal state
+                    rollerController.stop();
+                    /* --- OLD CODE ---
                     intakeRoller.setPower(0);
+                    intakeRoller2.setPower(0);
+                    */
+                    break;
                 default:
+                    rollerController.stop();
                     break;
             }
             previousIntakeState = currentIntakeState;
         }
-        // 2. Roller Bed Motor
 
-
-        // 3. Feeder Servos
-        // Determine the target power for each feeder servo
-
-        // Set left feeder power if it changed
-
+        // NEW: Heartbeat - calculates and applies motor power every loop
+        rollerController.update();
+        intakeCamera.update();
     }
 
 
     /**
-     * Stops all motors and servos AND resets the state of the subsystem.
+     * Stops all motors and resets the subsystem state.
      */
     public void stop() {
-        // --- 1. Set all hardware to a stopped state ---
+        // NEW: Stop the PID controller (handles resetting motor power to 0)
+        rollerController.stop();
+        
+        /* --- OLD CODE ---
         intakeRoller.setPower(0);
+        intakeRoller2.setPower(0);
+        */
 
-
-        // --- 2. Reset all state variables to their default values ---
         changeState(IntakeState.OFF);
+    }
 
-        // --- 3. Close any open resources ---
-        // This ensures the debug plotters are closed correctly
+
+    /**
+     * Checks if the intake camera currently detects a ball.
+     * @return True if a ball is detected.
+     */
+    public boolean isBallInFront() {
+        return intakeCamera.isBallDetected();
+    }
+
+
+    /**
+     * A convenience method to get the horizontal position of the target.
+     * Prioritizes the center of a cluster if detected, otherwise the best single ball.
+     * @return The X-coordinate (0-319), or -1 if nothing is detected.
+     */
+    public int getFrontBallPositionX() {
+        if (intakeCamera.isClusterDetected()) {
+            return intakeCamera.getBestCluster().centerX;
         }
+        return (intakeCamera.getBestBall() != null) ? intakeCamera.getBestBall().x : -1;
+    }
+
+
+    /**
+     * Sets the target RPM for the FORWARD intake state.
+     * @param rpm The target RPM.
+     */
+    public void setForwardRPM(double rpm) {
+        this.forwardRPM = rpm;
+        // If we are currently in FORWARD state, update the controller immediately
+        if (currentIntakeState == IntakeState.FORWARD) {
+            rollerController.setRPM(forwardRPM);
+        }
+    }
+
+    /**
+     * Gets the current target RPM for the FORWARD intake state.
+     * @return The target RPM.
+     */
+    public double getForwardRPM() {
+        return forwardRPM;
+    }
+
+    /**
+     * Enables or disables debugging for the intake roller PIDF controller.
+     * @param enable True to enable, false to disable.
+     */
+    public void setDebug(boolean enable) {
+        rollerController.setDebug(enable);
+    }
 
     /**
      * Enables debug plotting for a specific color sensor.
@@ -179,8 +260,32 @@ public class Intake {
      * @return The FeederState enum (OFF, FORWARD, or REVERSE).
      */
 
-    public void changeState(IntakeState newState) {
-        currentIntakeState = newState;
+    public void addIntakeCameraTelemetry(Telemetry telemetry) {
+        intakeCamera.addTelemetry(telemetry);
+    }
 
+    public double lastBallTime() {
+        return intakeCamera.getLastBallDetected();
+    }
+
+    public void changeState(IntakeState newState) {
+        System.out.printf(Locale.US, "INTAKE: Previous state: %s New State: %s %n", currentIntakeState, newState);
+        currentIntakeState = newState;
+    }
+
+    public void setIntakeRoller(boolean on) {
+        if (on) {
+            changeState(IntakeState.FORWARD);
+        } else {
+            changeState(IntakeState.OFF);
+        }
+    }
+
+    public void enableCameraSensing(boolean enable) {
+        this.isCameraSensingEnabled = enable;
+    }
+
+    public IntakeRoller getRollerController() {
+        return rollerController;
     }
 }

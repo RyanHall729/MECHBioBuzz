@@ -29,7 +29,7 @@ public class TeleOp_Main extends OpMode {
     // --- Subsystem and Hardware Declarations ---
     private RobotHardware robot;
     private Drivetrain drivetrain;
-    //private Intake intake;
+    private Intake intake;
 ////    private Shooter shooter;
 //    private Turret turret;
     private FieldSimulator fieldSimulator;
@@ -119,11 +119,11 @@ public class TeleOp_Main extends OpMode {
 
         // 2. Initialize all subsystems by passing the hardware hub
         drivetrain = new Drivetrain(robot);
-        //intake = new Intake(robot);
+        intake = new Intake(robot);
 //        shooter = new Shooter(robot);
 //        turret = new Turret(robot);
         fieldSimulator = new FieldSimulator();
-        scheduler = new CommandScheduler(drivetrain);
+        scheduler = new CommandScheduler(drivetrain, intake);
 
         // Tell the scheduler to stop acting like it's in Autonomous mode
         scheduler.setTeleOpMode(true);
@@ -205,7 +205,7 @@ public class TeleOp_Main extends OpMode {
         telemetry.addLine("X: Close Shot | A: Mid Shot | B: Far Shot");
 
         telemetry.addLine("Options: Cycle Turret Mode (Manual -> Aim Red -> Aim Blue)");
-        //telemetry.addLine("Y: Toggle Intake Roller");
+        telemetry.addLine("Y: Toggle Intake Roller");
         telemetry.update();
     }
 
@@ -228,7 +228,7 @@ public class TeleOp_Main extends OpMode {
 //        intake.toggleIntakeRoller();
 ////        intake.setRollerBedSpeed(1);
 //        intake.setFeederState(Intake.FeederState.REVERSE);
-//        intake.changeState(Intake.IntakeState.FORWARD);
+        intake.changeState(Intake.IntakeState.OFF);
 
         // If the initial state is an aiming state, tell the turret what to do.
 //        if (turretState == TurretAimingState.AIM_RED) {
@@ -275,7 +275,7 @@ public class TeleOp_Main extends OpMode {
         // Call the update() method for each subsystem on every loop.
         // This is where continuous logic, like PID loops and timers, is executed.
         drivetrain.update();
-//        intake.update();
+        intake.update();
 //        shooter.update(intake, turret, drivetrain);
 //        turret.update(drivetrain);
         fieldSimulator.update(drivetrain);
@@ -323,19 +323,19 @@ public class TeleOp_Main extends OpMode {
             // NOTE: Current functionality 'intake.cycleFeederState()' has been replaced by Open Gate path
             // if (gamepad1.yWasPressed()) { intake.cycleFeederState(); }
 //            executePredefinedPath(PathDestination.OPEN_GATE);
-//            intake.changeState(Intake.IntakeState.OFF);
+            intake.changeState(Intake.IntakeState.OFF);
         }
 
         // Button B: Drive to and Push Ramp Gate
         if (gamepad1.bWasPressed()) {
 //            executePredefinedPath(PathDestination.PUSH_GATE);
-//            intake.changeState(Intake.IntakeState.FORWARD);
+            intake.changeState(Intake.IntakeState.FORWARD);
         }
 
         // Button X: Return to Shooting Position
         if (gamepad1.xWasPressed()) {
 //            executePredefinedPath(PathDestination.RETURN_SHOOT);
-//            intake.changeState(Intake.IntakeState.REVERSE);
+            intake.changeState(Intake.IntakeState.REVERSE);
         }
 
 //        // Drivetrain
@@ -727,6 +727,7 @@ public class TeleOp_Main extends OpMode {
 //        telemetry.addData("Ball Colors", intake.getBallStatusString());
 //        telemetry.addData("Feeder State", intake.getFeederState().toString());
 //        telemetry.addData("Bed Speed", "%.2f", intake.getRollerBedSpeed());
+        intake.addIntakeCameraTelemetry(telemetry);
 
         // Turret Telemetry with new aiming data
         telemetry.addData("Turret Mode", turretState.toString());
