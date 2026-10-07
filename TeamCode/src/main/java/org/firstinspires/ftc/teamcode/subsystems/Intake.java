@@ -1,17 +1,11 @@
 package org.firstinspires.ftc.teamcode.subsystems;
 
-import com.qualcomm.robotcore.hardware.CRServo;
-import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
-import com.qualcomm.robotcore.hardware.Servo;
-import com.qualcomm.robotcore.util.ElapsedTime;
-import com.qualcomm.robotcore.util.Range;
+
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 
 import org.firstinspires.ftc.teamcode.hardware.RobotHardware;
-import org.firstinspires.ftc.teamcode.util.BallColor;
-import org.firstinspires.ftc.teamcode.util.HuskyLensUtil;
+//import org.firstinspires.ftc.teamcode.util.HuskyLensUtil;
 import org.firstinspires.ftc.teamcode.util.IntakeRoller;
 
 import java.util.Locale;
@@ -58,7 +52,7 @@ public class Intake {
     }
 
     // --- Hardware ---
-    private final HuskyLensUtil intakeCamera;
+    //private final HuskyLensUtil intakeCamera;
     // --- State ---
 
 
@@ -83,13 +77,13 @@ public class Intake {
 //        this.intakeRoller2 = robot.intakeRoller2;
 
         // NEW: Cast motors to DcMotorEx to support velocity-based PIDF control
-        DcMotorEx motor1 = robot.intakeRoller1;
-        DcMotorEx motor2 = robot.intakeRoller2;
+        DcMotorEx motor1 = robot.intake;
+//        DcMotorEx motor2 = robot.intakeRoller2;
 
-        this.intakeCamera = new HuskyLensUtil(robot);
+        //this.intakeCamera = new HuskyLensUtil(robot);
 
         // NEW: Initialize the PIDF controller utility
-        this.rollerController = new IntakeRoller(motor1, motor2);
+        this.rollerController = new IntakeRoller(motor1);
 
         // NEW: Set PIDF coefficients (kP, kI, kD, kF)
         // 0.5 kF provides ~50% baseline power for the 6000 RPM motors
@@ -162,7 +156,7 @@ public class Intake {
 
         // NEW: Heartbeat - calculates and applies motor power every loop
         rollerController.update();
-        intakeCamera.update();
+        //intakeCamera.update();
     }
 
 
@@ -186,9 +180,8 @@ public class Intake {
      * Checks if the intake camera currently detects a ball.
      * @return True if a ball is detected.
      */
-    public boolean isBallInFront() {
-        return intakeCamera.isBallDetected();
-    }
+//    public boolean isBallInFront() {}
+//        //return intakeCamera.isBallDetected();
 
 
     /**
@@ -196,12 +189,12 @@ public class Intake {
      * Prioritizes the center of a cluster if detected, otherwise the best single ball.
      * @return The X-coordinate (0-319), or -1 if nothing is detected.
      */
-    public int getFrontBallPositionX() {
-        if (intakeCamera.isClusterDetected()) {
-            return intakeCamera.getBestCluster().centerX;
-        }
-        return (intakeCamera.getBestBall() != null) ? intakeCamera.getBestBall().x : -1;
-    }
+    //public int getFrontBallPositionX() {
+//        if (intakeCamera.isClusterDetected()) {
+//            return intakeCamera.getBestCluster().centerX;
+//        }
+//        return (intakeCamera.getBestBall() != null) ? intakeCamera.getBestBall().x : -1;
+    //}
 
 
     /**
@@ -261,12 +254,12 @@ public class Intake {
      */
 
     public void addIntakeCameraTelemetry(Telemetry telemetry) {
-        intakeCamera.addTelemetry(telemetry);
+        //intakeCamera.addTelemetry(telemetry);
     }
 
-    public double lastBallTime() {
-        return intakeCamera.getLastBallDetected();
-    }
+//    public double lastBallTime() {
+//        //return intakeCamera.getLastBallDetected();
+//    }
 
     public void changeState(IntakeState newState) {
         System.out.printf(Locale.US, "INTAKE: Previous state: %s New State: %s %n", currentIntakeState, newState);

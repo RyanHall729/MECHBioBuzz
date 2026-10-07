@@ -50,30 +50,28 @@ public class IntakeRoller {
 
     // --- HARDWARE ---
     private final DcMotorEx intakeMotor1;
-    private final DcMotorEx intakeMotor2;
 
-    public IntakeRoller(DcMotorEx motor1, DcMotorEx motor2) {
-        this(motor1, motor2, DEFAULT_KP, DEFAULT_KI, DEFAULT_KD, DEFAULT_KF);
+    public IntakeRoller(DcMotorEx motor1) {
+        this(motor1, DEFAULT_KP, DEFAULT_KI, DEFAULT_KD, DEFAULT_KF);
     }
 
-    public IntakeRoller(DcMotorEx motor1, DcMotorEx motor2, double kP, double kI, double kD, double kF) {
+    public IntakeRoller(DcMotorEx motor1, double kP, double kI, double kD, double kF) {
         this.intakeMotor1 = motor1;
-        this.intakeMotor2 = motor2;
 
         setPIDFCoefficients(kP, kI, kD, kF);
 
         // Hardware Configuration:
         // 1. RUN_WITHOUT_ENCODER allows us to use our own PID math rather than the built-in SDK logic.
         this.intakeMotor1.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        this.intakeMotor2.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+//        this.intakeMotor2.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
         // 2. Directions are set so positive power pulls game pieces into the robot.
         this.intakeMotor1.setDirection(DcMotor.Direction.FORWARD);
-        this.intakeMotor2.setDirection(DcMotor.Direction.FORWARD);
+//        this.intakeMotor2.setDirection(DcMotor.Direction.FORWARD);
 
         // 3. ZeroPowerBehavior.FLOAT allows the rollers to spin freely when power is 0.
         this.intakeMotor1.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
-        this.intakeMotor2.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+//        this.intakeMotor2.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
 
         pidTimer.reset();
     }
@@ -210,14 +208,14 @@ public class IntakeRoller {
         // --- OPEN LOOP MODE ---
         if (isManualMode) {
             intakeMotor1.setPower(manualPower);
-            intakeMotor2.setPower(manualPower);
+//            intakeMotor2.setPower(manualPower);
 
             if (isDebugEnabled && plotClient != null) {
                 long time = System.currentTimeMillis();
                 plotClient.sendLineY(time, 0, 1);
                 plotClient.sendLineY(time, getCurrentRPM(), 2);
                 plotClient.sendLineY2(time, intakeMotor1.getCurrent(CurrentUnit.AMPS), 3);
-                plotClient.sendLineY2(time, intakeMotor2.getCurrent(CurrentUnit.AMPS), 4);
+//                plotClient.sendLineY2(time, intakeMotor2.getCurrent(CurrentUnit.AMPS), 4);
             }
             return;
         }
@@ -225,7 +223,7 @@ public class IntakeRoller {
         // --- CLOSED LOOP MODE ---
         if (targetRPM == 0) {
             intakeMotor1.setPower(0);
-            intakeMotor2.setPower(0);
+//            intakeMotor2.setPower(0);
 
             if (isDebugEnabled && plotClient != null) {
                 long time = System.currentTimeMillis();
@@ -270,7 +268,7 @@ public class IntakeRoller {
         motorPower = Range.clip(motorPower, (targetRPM >= 0) ? 0.0 : -1.0, (targetRPM >= 0) ? 1.0 : 0.0);
 
         intakeMotor1.setPower(motorPower);
-        intakeMotor2.setPower(motorPower);
+//        intakeMotor2.setPower(motorPower);
 
         if (isDebugEnabled) {
             long time = System.currentTimeMillis();
@@ -300,7 +298,7 @@ public class IntakeRoller {
     public void stop() {
         setRPM(0);
         intakeMotor1.setPower(0);
-        intakeMotor2.setPower(0);
+//        intakeMotor2.setPower(0);
         reset();
 
         if (isDebugEnabled && plotClient != null) {

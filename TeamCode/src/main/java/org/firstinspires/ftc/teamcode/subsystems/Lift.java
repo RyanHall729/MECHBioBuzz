@@ -11,7 +11,7 @@ import org.opencv.core.Mat;
 //Hardware
 public class Lift {
 
-    private final LiftArm liftController;
+    //private final LiftArm liftController;
 
     public static final int POSITION_BOTTOM = 0;
     public static final int POSITION_MIDDLE = 1350;
@@ -33,55 +33,52 @@ public class Lift {
 
     public Lift(RobotHardware robot) {
 
-        DcMotorEx liftMotor1 = robot.liftMotor1;
-        DcMotorEx liftMotor2 = robot.liftMotor2;
-        DigitalChannel liftLimitSwitch = robot.liftLimitSwitch;
+//        DcMotorEx liftMotor1 = robot.liftMotor1;
+//        DcMotorEx liftMotor2 = robot.liftMotor2;
+//        DigitalChannel liftLimitSwitch = robot.liftLimitSwitch;
 
-        this.liftController = new LiftArm(liftMotor1, liftMotor2, liftLimitSwitch);
+//        this.liftController = new LiftArm(liftMotor1, liftMotor2, liftLimitSwitch);
     }
 
     public void update() {
-        if (liftController.isLimitPressed() && Math.abs(liftController.getCurrentPosition()) > 10) {
-            liftController.resetEncoders();
+//        if (liftController.isLimitPressed() && Math.abs(liftController.getCurrentPosition()) > 10) {
+//            liftController.resetEncoders();
         }
-        if (currentLiftState != previousLiftState) {
-            switch (currentLiftState) {
-                case TOP:
-                    liftController.setTargetPosition(POSITION_TOP);
-                    isManual = false;
-                    break;
-                case BOTTOM:
-                    liftController.setTargetPosition(POSITION_BOTTOM);
-                    isManual = false;
-                    break;
-                case MIDDLE:
-                    liftController.setTargetPosition(POSITION_MIDDLE);
-                    isManual = false;
-                    break;
-                default:
-                    liftController.setTargetPosition(POSITION_BOTTOM);
-                    break;
-            }
-        }
-        previousLiftState = currentLiftState;
+//        if (currentLiftState != previousLiftState) {
+//            switch (currentLiftState) {
+//                case TOP:
+//                    liftController.setTargetPosition(POSITION_TOP);
+//                    isManual = false;
+//                    break;
+//                case BOTTOM:
+//                    liftController.setTargetPosition(POSITION_BOTTOM);
+//                    isManual = false;
+//                    break;
+//                case MIDDLE:
+//                    liftController.setTargetPosition(POSITION_MIDDLE);
+//                    isManual = false;
+//                    break;
+//                default:
+//                    liftController.setTargetPosition(POSITION_BOTTOM);
+//                    break;
+//            }
+//        }
+//        previousLiftState = currentLiftState;
+//
+//        if (currentLiftState == LiftState.MANUAL) {
+//            liftController.setPower(manualPower);
+//        }
+//    }
+//
+//    public void setManualControl(double power) {
+//        this.manualPower = power;
+//
+//        if (Math.abs(power) > 0.05) {
+//            this.currentLiftState = LiftState.MANUAL;
+//        }
+//    }
+//
+//    public void setState(LiftState state) {
+//        this.currentLiftState = state;
 
-        if (currentLiftState == LiftState.MANUAL) {
-            liftController.setPower(manualPower);
-        }
     }
-
-    public void setManualControl(double power) {
-        this.manualPower = power;
-
-        if (Math.abs(power) > 0.05) {
-            this.currentLiftState = LiftState.MANUAL;
-        }
-    }
-
-    public void setState(LiftState state) {
-        this.currentLiftState = state;
-
-    }
-
-
-}

@@ -1,14 +1,11 @@
 package org.firstinspires.ftc.teamcode.hardware;
 
 import com.qualcomm.hardware.lynx.LynxModule;
-import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.HardwareMap;
-import com.qualcomm.robotcore.hardware.NormalizedColorSensor;
-import com.qualcomm.robotcore.hardware.Servo;
-import com.qualcomm.hardware.limelightvision.Limelight3A;
+
 import org.firstinspires.ftc.teamcode.util.GoBildaPinpointDriver; // Assuming this is the correct package for GoBildaPinpointDriver
 import com.qualcomm.hardware.dfrobot.HuskyLens;
 
@@ -30,20 +27,19 @@ public class RobotHardware {
     // These names must match the configuration on the Driver Station/Control Hub.
 
     // Drivetrain
-    public static final String FRONT_LEFT_DRIVE_NAME = "front_left_drive";
-    public static final String BACK_LEFT_DRIVE_NAME = "back_left_drive";
-    public static final String FRONT_RIGHT_DRIVE_NAME = "front_right_drive";
-    public static final String BACK_RIGHT_DRIVE_NAME = "back_right_drive";
+    public static final String FRONT_LEFT_DRIVE_NAME = "frontLeftDrive";
+    public static final String BACK_LEFT_DRIVE_NAME = "backLeftDrive";
+    public static final String FRONT_RIGHT_DRIVE_NAME = "frontRightDrive";
+    public static final String BACK_RIGHT_DRIVE_NAME = "backRightDrive";
     public static final String ODO_NAME = "odo";
 
-    public static final String INTAKE_ROLLER_NAME = "intake_roller_1";
-    public static final String INTAKE_ROLLER_2_NAME = "intake_roller_2";
+    public static final String INTAKE_NAME = "intake";
 
 
-    public static final String INTAKE_CAMERA_NAME = "huskylens";
+//    public static final String INTAKE_CAMERA_NAME = "huskylens";
 
-    public static final String LIFT_MOTOR_1_NAME = "lift_motor_1";
-    public static final String LIFT_MOTOR_2_NAME = "lift_motor_2";
+//    public static final String LIFT_MOTOR_1_NAME = "lift_motor_1";
+//    public static final String LIFT_MOTOR_2_NAME = "lift_motor_2";
     public static final String LIFT_LIMIT_SWITCH_NAME = "lift_limit_switch";
     //    // Intake & Ball Transport
 //    public static final String INTAKE_ROLLER_NAME = "intake_roller";
@@ -94,9 +90,9 @@ public class RobotHardware {
     public HuskyLens huskyLens;
 
 
-    public DcMotorEx liftMotor1;
-    public DcMotorEx liftMotor2;
-    public DigitalChannel liftLimitSwitch;
+//    public DcMotorEx liftMotor1;
+//    public DcMotorEx liftMotor2;
+//    public DigitalChannel liftLimitSwitch;
 
     // Intake & Ball Transport
 //    public DcMotor intakeRoller;
@@ -111,9 +107,9 @@ public class RobotHardware {
 //    public CRServo leftBoosterServo;
 //    public CRServo rightBoosterServo;
 //    public HuskyLens huskyLens;
-    public DcMotorEx intakeRoller1;
+    public DcMotorEx intake;
 
-    public DcMotorEx intakeRoller2;
+//    public DcMotorEx intakeRoller2;
 
     // Color Sensors
 //    public NormalizedColorSensor leftCS;
@@ -150,11 +146,10 @@ public class RobotHardware {
         frontRightDrive = hardwareMap.get(DcMotor.class, FRONT_RIGHT_DRIVE_NAME);
         backRightDrive = hardwareMap.get(DcMotor.class, BACK_RIGHT_DRIVE_NAME);
         odo = hardwareMap.get(GoBildaPinpointDriver.class, ODO_NAME);
-        intakeRoller1 = hardwareMap.get(DcMotorEx.class, INTAKE_ROLLER_NAME);
-        intakeRoller2 = hardwareMap.get(DcMotorEx.class, INTAKE_ROLLER_2_NAME);
-        liftMotor1 = hardwareMap.get(DcMotorEx.class, LIFT_MOTOR_1_NAME);
-        liftMotor2 = hardwareMap.get(DcMotorEx.class, LIFT_MOTOR_2_NAME);
-        liftLimitSwitch = hardwareMap.get(DigitalChannel.class, LIFT_LIMIT_SWITCH_NAME);
+        intake = hardwareMap.get(DcMotorEx.class, INTAKE_NAME);
+//        liftMotor1 = hardwareMap.get(DcMotorEx.class, LIFT_MOTOR_1_NAME);
+//        liftMotor2 = hardwareMap.get(DcMotorEx.class, LIFT_MOTOR_2_NAME);
+//        liftLimitSwitch = hardwareMap.get(DigitalChannel.class, LIFT_LIMIT_SWITCH_NAME);
 
         // Intake & Ball Transport
 //        intakeRoller = hardwareMap.get(DcMotor.class, INTAKE_ROLLER_NAME);
@@ -168,7 +163,7 @@ public class RobotHardware {
 //        rightFeederServo = hardwareMap.get(CRServo.class, RIGHT_FEEDER_SERVO_NAME);
 //        leftBoosterServo = hardwareMap.get(CRServo.class, LEFT_BOOSTER_SERVO_NAME);
 //        rightBoosterServo = hardwareMap.get(CRServo.class, RIGHT_BOOSTER_SERVO_NAME);
-        huskyLens = hardwareMap.get(HuskyLens.class, INTAKE_CAMERA_NAME);
+//        huskyLens = hardwareMap.get(HuskyLens.class, INTAKE_CAMERA_NAME);
 
         // Color Sensors
 //        leftCS = hardwareMap.get(NormalizedColorSensor.class, LEFT_COLOR_SENSOR_NAME);

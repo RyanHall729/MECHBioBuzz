@@ -142,24 +142,24 @@ public class AutoIntakeCommand extends CommandBase {
                 }
                 break;
 
-            case SEARCHING:
-                if (intake.isBallInFront()) {
-                    transitionTo(State.CHASING);
-                } else if (stateTimer.seconds() > 0.5) {
-                    if (canScan) transitionTo(State.SCANNING);
-                    else if (stateTimer.seconds() > searchTimeout) transitionTo(State.DONE);
-                }
-                break;
+//            case SEARCHING:
+//                if (intake.isBallInFront()) {
+//                    transitionTo(State.CHASING);
+//                } else if (stateTimer.seconds() > 0.5) {
+//                    if (canScan) transitionTo(State.SCANNING);
+//                    else if (stateTimer.seconds() > searchTimeout) transitionTo(State.DONE);
+//                }
+                //break;
 
             case SCANNING:
-                if (intake.isBallInFront()) {
-                    transitionTo(State.CHASING);
-                    return;
-                }
+//                if (intake.isBallInFront()) {
+//                    transitionTo(State.CHASING);
+//                    return;
+                //}
 
                 if (stateTimer.seconds() > searchTimeout) {
                     log(getName(), "Scan timeout - no balls found.");
-                    transitionTo(State.DONE);
+                    //transitionTo(State.DONE);
                     return;
                 }
 
@@ -173,18 +173,18 @@ public class AutoIntakeCommand extends CommandBase {
                 drivetrain.drive(0, 0, scanRotPower);
                 break;
 
-            case CHASING:
-                if (!intake.isBallInFront() && intake.lastBallTime() > 300) {
-                    log(getName(), "Target lost close-up. Finishing blind.");
-                    transitionTo(State.BLIND_FINISH);
-                    return;
-                }
-
-                int targetX = intake.getFrontBallPositionX();
-                double error = CAMERA_CENTER_X - targetX;
-                double rx = Range.clip(error * KP_ROTATION, -MAX_ROTATION_POWER, MAX_ROTATION_POWER);
-                drivetrain.drive(CHASE_DRIVE_SPEED, 0, rx);
-                break;
+//            case CHASING:
+//                if (!intake.isBallInFront() && intake.lastBallTime() > 300) {
+//                    log(getName(), "Target lost close-up. Finishing blind.");
+//                    transitionTo(State.BLIND_FINISH);
+//                    return;
+//                }
+//
+//                int targetX = intake.getFrontBallPositionX();
+//                double error = CAMERA_CENTER_X - targetX;
+//                double rx = Range.clip(error * KP_ROTATION, -MAX_ROTATION_POWER, MAX_ROTATION_POWER);
+//                drivetrain.drive(CHASE_DRIVE_SPEED, 0, rx);
+//                break;
 
             case BLIND_FINISH:
                 drivetrain.drive(CHASE_DRIVE_SPEED, 0, 0);
