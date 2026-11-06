@@ -35,6 +35,10 @@ public class RobotHardware {
 
     public static final String INTAKE_NAME = "intake";
 
+    // Transfer
+    public static final String TRANSFER_MOTOR_1_NAME = "transferMotor1";
+    public static final String TRANSFER_MOTOR_2_NAME = "transferMotor2";
+
 
 //    public static final String INTAKE_CAMERA_NAME = "huskylens";
 
@@ -109,6 +113,10 @@ public class RobotHardware {
 //    public HuskyLens huskyLens;
     public DcMotorEx intake;
 
+    // Transfer
+    public DcMotorEx transferMotor1;
+    public DcMotorEx transferMotor2;
+
 //    public DcMotorEx intakeRoller2;
 
     // Color Sensors
@@ -147,6 +155,8 @@ public class RobotHardware {
         backRightDrive = hardwareMap.get(DcMotor.class, BACK_RIGHT_DRIVE_NAME);
         odo = hardwareMap.get(GoBildaPinpointDriver.class, ODO_NAME);
         intake = hardwareMap.get(DcMotorEx.class, INTAKE_NAME);
+        transferMotor1 = hardwareMap.get(DcMotorEx.class, TRANSFER_MOTOR_1_NAME);
+        transferMotor2 = hardwareMap.get(DcMotorEx.class, TRANSFER_MOTOR_2_NAME);
 //        liftMotor1 = hardwareMap.get(DcMotorEx.class, LIFT_MOTOR_1_NAME);
 //        liftMotor2 = hardwareMap.get(DcMotorEx.class, LIFT_MOTOR_2_NAME);
 //        liftLimitSwitch = hardwareMap.get(DigitalChannel.class, LIFT_LIMIT_SWITCH_NAME);
