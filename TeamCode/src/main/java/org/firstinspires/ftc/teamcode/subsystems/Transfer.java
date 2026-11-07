@@ -60,9 +60,12 @@ public class Transfer {
 
     /**
      * Configures motor directions, zero-power behaviors, and run modes.
+     * Left motor (transferMotor1): FORWARD (Clockwise)
+     * Right motor (transferMotor2): REVERSE (Counter-Clockwise)
      */
     private void configureMotors() {
         if (transferMotor1 != null) {
+            // Left motor spins Clockwise (FORWARD)
             transferMotor1.setDirection(DcMotorSimple.Direction.FORWARD);
             transferMotor1.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
             transferMotor1.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
@@ -70,7 +73,8 @@ public class Transfer {
         }
 
         if (transferMotor2 != null) {
-            transferMotor2.setDirection(DcMotorSimple.Direction.FORWARD);
+            // Right motor spins Counter-Clockwise (REVERSE)
+            transferMotor2.setDirection(DcMotorSimple.Direction.REVERSE);
             transferMotor2.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
             transferMotor2.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
             transferMotor2.setPower(0);
@@ -267,6 +271,14 @@ public class Transfer {
     }
 
     public DcMotorEx getTransferMotor2() {
+        return transferMotor2;
+    }
+
+    public DcMotorEx getLeftMotor() {
+        return transferMotor1;
+    }
+
+    public DcMotorEx getRightMotor() {
         return transferMotor2;
     }
 
