@@ -12,6 +12,7 @@ import org.firstinspires.ftc.teamcode.hardware.RobotHardware;
 import org.firstinspires.ftc.teamcode.subsystems.Drivetrain;
 import org.firstinspires.ftc.teamcode.subsystems.FieldSimulator;
 import org.firstinspires.ftc.teamcode.subsystems.Intake;
+import org.firstinspires.ftc.teamcode.subsystems.Transfer;
 import com.qualcomm.hardware.limelightvision.LLStatus;
 
 import org.firstinspires.ftc.teamcode.util.Alliance;
@@ -30,6 +31,9 @@ public class TeleOp_Main extends OpMode {
     private RobotHardware robot;
     private Drivetrain drivetrain;
     private Intake intake;
+    private Transfer transfer;
+    private boolean lastRightTriggerPressed = false;
+    private boolean lastLeftTriggerPressed = false;
 ////    private Shooter shooter;
 //    private Turret turret;
     private FieldSimulator fieldSimulator;
@@ -120,6 +124,7 @@ public class TeleOp_Main extends OpMode {
         // 2. Initialize all subsystems by passing the hardware hub
         drivetrain = new Drivetrain(robot);
         intake = new Intake(robot);
+        transfer = new Transfer(robot);
 //        shooter = new Shooter(robot);
 //        turret = new Turret(robot);
         fieldSimulator = new FieldSimulator();
@@ -182,7 +187,8 @@ public class TeleOp_Main extends OpMode {
         telemetry.addLine("Left Stick: Drive | Right Stick: Turn");
         telemetry.addLine("Start: Full System ON | Back: Full System OFF");
 //        telemetry.addLine("Y: Cycle Feeder (Off/Fwd/Rev)");
-        telemetry.addLine("Y: [AUTO] Open Gate | B: [AUTO] Push Gate | X: [AUTO] Return Shoot");
+        telemetry.addLine("Right Trigger: Toggle Intake FORWARD | Left Trigger: Toggle Intake REVERSE");
+        telemetry.addLine("Y: Toggle Transfer Motors");
         telemetry.addLine("D-Pad U/D: Lifter Down/Up");
         // telemetry.addLine("D-Pad U/D: Adjust Roller Bed Speed");
         telemetry.addLine("D-Pad Right: Toggle Flywheel AUTO/MANUAL");
@@ -276,6 +282,7 @@ public class TeleOp_Main extends OpMode {
         // This is where continuous logic, like PID loops and timers, is executed.
         drivetrain.update();
         intake.update();
+        transfer.update();
 //        shooter.update(intake, turret, drivetrain);
 //        turret.update(drivetrain);
         fieldSimulator.update(drivetrain);
@@ -316,26 +323,34 @@ public class TeleOp_Main extends OpMode {
             drivetrain.drive(driveY, driveX, turn);
         }
 
-        // --- AUTOMATED PATH TRIGGERS ---
+        // --- INTAKE TRIGGER TOGGLES ---
+        boolean isRightTriggerPressed = gamepad1.right_trigger > 0.3;
+        if (isRightTriggerPressed && !lastRightTriggerPressed) {
+            if (intake.getIntakeState() == Intake.IntakeState.FORWARD) {
+                intake.changeState(Intake.IntakeState.OFF);
+            } else {
+                intake.changeState(Intake.IntakeState.FORWARD);
+            }
+        }
+        lastRightTriggerPressed = isRightTriggerPressed;
 
-        // Button Y: Open the Gate (New Functionality)
+        boolean isLeftTriggerPressed = gamepad1.left_trigger > 0.3;
+        if (isLeftTriggerPressed && !lastLeftTriggerPressed) {
+            if (intake.getIntakeState() == Intake.IntakeState.REVERSE) {
+                intake.changeState(Intake.IntakeState.OFF);
+            } else {
+                intake.changeState(Intake.IntakeState.REVERSE);
+            }
+        }
+        lastLeftTriggerPressed = isLeftTriggerPressed;
+
+        // --- TRANSFER MOTOR TOGGLE ---
         if (gamepad1.yWasPressed()) {
-            // NOTE: Current functionality 'intake.cycleFeederState()' has been replaced by Open Gate path
-            // if (gamepad1.yWasPressed()) { intake.cycleFeederState(); }
-//            executePredefinedPath(PathDestination.OPEN_GATE);
-            intake.changeState(Intake.IntakeState.OFF);
-        }
-
-        // Button B: Drive to and Push Ramp Gate
-        if (gamepad1.bWasPressed()) {
-//            executePredefinedPath(PathDestination.PUSH_GATE);
-            intake.changeState(Intake.IntakeState.FORWARD);
-        }
-
-        // Button X: Return to Shooting Position
-        if (gamepad1.xWasPressed()) {
-//            executePredefinedPath(PathDestination.RETURN_SHOOT);
-            intake.changeState(Intake.IntakeState.REVERSE);
+            if (transfer.getTransferState() == Transfer.TransferState.FORWARD) {
+                transfer.changeState(Transfer.TransferState.OFF);
+            } else {
+                transfer.changeState(Transfer.TransferState.FORWARD);
+            }
         }
 
 //        // Drivetrain
@@ -721,13 +736,10 @@ public class TeleOp_Main extends OpMode {
                 pose.getX(DistanceUnit.INCH), pose.getY(DistanceUnit.INCH), pose.getHeading(AngleUnit.DEGREES));
         telemetry.addData("Position", posStr);
 
-        // Intake Telemetry
-//        intake.addIntakeCameraTelemetry(telemetry);
-//        telemetry.addData("Intake On", intake.isIntakeOn());
-//        telemetry.addData("Ball Colors", intake.getBallStatusString());
-//        telemetry.addData("Feeder State", intake.getFeederState().toString());
-//        telemetry.addData("Bed Speed", "%.2f", intake.getRollerBedSpeed());
+        // Intake & Transfer Telemetry
+        telemetry.addData("Intake State", intake.getIntakeState().toString());
         intake.addIntakeCameraTelemetry(telemetry);
+        transfer.addTelemetry(telemetry);
 
         // Turret Telemetry with new aiming data
         telemetry.addData("Turret Mode", turretState.toString());
@@ -771,9 +783,8 @@ public class TeleOp_Main extends OpMode {
     public void stop() {
         // Call the stop() method for each subsystem to ensure all motors are turned off.
         drivetrain.stop();
-//        intake.stop();
-//        shooter.stop();
-//        turret.stop();
+        intake.stop();
+        transfer.stop();
     }
 
     /**
